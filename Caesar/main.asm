@@ -13,7 +13,7 @@ prompt3	db	"Encryption (e) or Decryption (d): ", 0h
 SECTION	.bss
 userin	resd	255,
 shift	resb	8,
-mode	resb	4,
+mode	resb	1,
 output	resd	255,
 
 SECTION	.text
@@ -23,13 +23,13 @@ _start:
 	xor	eax, eax
 	xor	ebx, ebx
 	xor	ecx, ecx
-	xor edx, edx
+	xor	edx, edx
 
 _getMode:
 	mov	eax, prompt
 	call	sprintLF
 
-	mov	edx, 255
+	mov	edx, 1020 
 	mov	ecx, userin
 	mov	ebx, 0
 	mov	eax, 3
@@ -47,7 +47,7 @@ _getMode:
 	mov	eax, prompt3
 	call	sprintLF
 
-	mov	edx, 4
+	mov	edx, 1
 	mov	ecx, mode
 	mov	ebx, 0
 	mov	eax, 3
@@ -57,8 +57,6 @@ _strip:
 	mov	eax, userin
 	call	stripToNull
 	mov	eax, shift
-	call	stripToNull
-	mov	eax, mode
 	call	stripToNull
 
 _convertShift:
