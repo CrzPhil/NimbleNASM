@@ -16,7 +16,7 @@ Not sure what motivated me to do this, but I've always wanted to hone my cryptog
 \- Bane
 
 - [X] [Caesar Cipher](./Caesar/README.md)
-- [ ] [Transpositional Cipher (WIP)](./TranspositionCipher/)
+- [X] [Transpositional Cipher (WIP)](./TranspositionCipher/)
 - [ ] ...
 - [ ] Stream ciphers
 - [ ] RSA
