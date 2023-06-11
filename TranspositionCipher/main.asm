@@ -12,6 +12,7 @@ secret	resb	255,
 secretlen	resb	8,
 mode	resb	4,
 blockspace	resq	255,
+rankMap resb  255,
 userout	resd	255,
 
 SECTION	.text
@@ -153,6 +154,140 @@ _split:
 	jmp	.nextLetter
 
 _rearrange:
+  call _createRankMap
+
+  mov ebx, blockspace   ; input
+  mov esi, userin       ; output
+  
+  ; Get column length in eax
+  mov ecx, [secretlen]
+  mov eax, [textlen]
+  div ecx
+
+  xor ecx, ecx  ; key iterator (and rankMap iterator)
+  xor edx, edx  ; column iterator
+  xor edi, edi  ; holds moved values
+
+.L1:
+  cmp edx, eax
+  je  .nextcol
+
+  movzx edi, byte [ebx+edx]
+  push  eax
+  push  ecx
+  push  edx
+  movzx ecx, byte [rankMap+ecx]
+  mul ecx         ; col_len * rankMap[key_index]
+  pop edx
+  add eax, edx    ; add index position of letter
+  
+  ; Pushing and popping because I can't remember/don't know if edi has a low register
+  push  edx
+  mov edx, edi
+  mov [esi+eax], dl ; move/copy letter to userin 
+  pop edx
+
+  pop ecx
+  pop eax         ; reset eax to col_len
+
+  inc edx
+  jmp .L1
+
+.nextcol:
+  inc ecx
+  cmp ecx, [secretlen]
+  je  _readsecret
+
+  add ebx, edx    ; shift pointer to next column
+  xor edx, edx    ; reset index 
+  jmp .L1
+
+_readsecret:
+  ; iterate through updated userin and save secret to userout
+  ; Get column length in eax
+  xor edx, edx
+  mov ecx, [secretlen]
+  mov eax, [textlen]
+  div ecx
+
+  xor ecx, ecx    ; column iterator (key length)
+  xor edi, edi    ; column content iterator (column length)
+  xor ebx, ebx
+
+  mov esi, userout
+
+.L1:
+  cmp edi, eax
+  je  _end
+
+  xor ecx, ecx
+
+.L2:
+  cmp ecx, [secretlen]
+  je  .nextLetter
+
+  push  eax
+  mul ecx
+  mov ebx, eax
+  add ebx, edi
+  pop eax
+  movzx edx, byte [userin+ebx]
+
+  mov [esi], dl
+
+  inc esi
+  inc ecx
+  jmp .L2
+
+.nextLetter:
+  inc edi
+  jmp .L1
 
 _end:
+	mov	eax, userout
+	call	sprintLF
 	call	quit
+
+
+_createRankMap:
+  push  edx
+  push  ecx
+  push  ebx
+  push  eax
+
+  mov ecx, [secretlen]
+  xor eax, eax    ; iterate through letters in key
+
+.L1:
+  cmp eax, ecx
+  je  .end
+  movzx edx, byte [secret+eax]
+  xor ebx, ebx
+  xor esi, esi
+
+.L2:
+  cmp ebx, ecx    ; if iterated through all letters (in second loop)
+  je  .nextLetter
+  movzx edi, byte [secret+ebx]
+
+  inc ebx
+
+  cmp edi, edx
+  jb  .skip
+  jmp .L2
+
+.skip:
+  inc esi
+  jmp .L2
+
+.nextLetter:
+  mov [rankMap+eax], si
+  inc eax
+  jmp .L1
+
+.end:
+  pop eax
+  pop ebx
+  pop ecx
+  pop edx
+  ret
