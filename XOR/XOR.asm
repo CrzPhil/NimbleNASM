@@ -1,4 +1,4 @@
-%include "/home/bunsen/Documents/Code/asm/functions.asm"
+%include "functions.asm"
 
 SECTION .data
 key  db  "myfriendofmisery", 0h ; 16 bytes 
