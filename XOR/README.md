@@ -1,5 +1,3 @@
-# XOR in NASM
-
 ## Takeaways and lessons
 
 It has been a while since I worked on this repo, so coming back to assembly after months of absence meant I had to revisit some chapters. The core learning of this project, which was easier to implement than I thought, was paying attention to `movzx`. A lot of the bug-fixing I had to go through was because I loaded my variables using `mov eax, [somevar]`, instead of `movzx eax, byte [somevar]`. By not zero-extending the value, I oftentimes had junk in the rest of `eax`, which caused spurious calculations and all sorts of crazy bugs. 
@@ -141,6 +139,7 @@ We first use `lseek` to move to a given offset within the file, and then we read
 | **SEEK_SET** | The file offset is set to _offset_ bytes.                           | 0     |
 | **SEEK_CUR** | The file offset is set to its current location plus _offset_ bytes. | 1     |
 | **SEEK_END** | The file offset is set to the size of the file plus *offset* bytes. | 2     |
+
 In our case, since we are keeping track of the `offset` variable, we use `SEEK_SET`, specifying how many bytes to move from the **start** of the file.  
 
 This approach of using a block size and jumping through the file with `lseek` has the benefit that we don't have to store the entire file in memory, but can encrypt it incrementally. 
