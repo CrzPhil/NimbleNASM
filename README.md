@@ -17,6 +17,7 @@ Not sure what motivated me to do this, but I've always wanted to hone my cryptog
 
 - [X] [Caesar Cipher](./Caesar/README.md)
 - [X] [Transpositional Cipher](./TranspositionCipher/)
+- [X] [XOR File encryption](./XOR/)
 - [ ] ...
 - [ ] Stream ciphers
 - [ ] RSA
